@@ -1,0 +1,3 @@
+[submodule "StegoDisk"]
+	path = StegoDisk
+	url = https://github.com/MatusKysel/StegoDisk.git
