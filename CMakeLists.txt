@@ -18,11 +18,12 @@ endif()
 
 ################ BOOST & PYTHON ##################
 
-find_package( PythonLibs REQUIRED ) #TODO 3>=
+set(Python_ADDITIONAL_VERSIONS 3.5)
+find_package( PythonLibs 3.5 REQUIRED ) #TODO 3>=
 include_directories( ${PYTHON_INCLUDE_DIRS} )
 
 #set(Boost_USE_STATIC_LIBS ON)
-find_package( Boost COMPONENTS python REQUIRED )
+find_package( Boost COMPONENTS python-py35 REQUIRED )
 include_directories( ${Boost_INCLUDE_DIR} )
 
 
