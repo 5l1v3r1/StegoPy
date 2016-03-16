@@ -18,6 +18,24 @@ stego_disk.configure()
 stego_disk.load()
 
 in_buffer = randomword(stego_disk.get_size())
+in_buffer = in_buffer.encode('ascii')
 
-# stego_disk.write(in_buffer, 0, len(in_buffer))
+stego_disk.write(in_buffer)
 
+stego_disk.save()
+
+
+stego_disk.open(to_directory, 'heslo')
+stego_disk.configure()
+stego_disk.load()
+
+out_buffer = bytearray()
+
+stego_disk.write(out_buffer)
+
+stego_disk.save()
+
+if out_buffer == in_buffer :
+	print("nice")
+else :
+	print("dopice")
