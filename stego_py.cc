@@ -10,32 +10,34 @@ void (stego_disk::StegoStorage::*Configure3)(const stego_disk::EncoderFactory::E
 
 void Write(stego_disk::StegoStorage& self, boost::python::object buffer) {
 
-  PyObject* py_obj = buffer.ptr();
-  if (!PyObject_CheckBuffer(py_obj)) {
-    throw std::runtime_error("Wrong object type");
-  }
-  Py_buffer py_buffer;
-  if (PyObject_GetBuffer(py_obj, &py_buffer, PyBUF_WRITE)) {
-    throw std::runtime_error("Unable to get buffer");
-  }
-  self.Write(static_cast<void*>(py_buffer.buf), 0, static_cast<size_t>(py_buffer.len));
-  PyBuffer_Release(&py_buffer);
+  size_t size =  boost::python::len(buffer);
+
+  if(size > self.GetSize())
+    throw std::runtime_error("Stego has not enough space");
+
+  unsigned char* buff = (unsigned char*)malloc(size * sizeof(unsigned char));
+
+  for(size_t i = 0; i < size; ++i)
+    buff[i] = boost::python::extract<unsigned char>(buffer[i] );
+
+  self.Write(static_cast<void*>(buff), 0, size);
+  free(buff);
 }
 
-boost::python::object Read(stego_disk::StegoStorage& self){
+boost::python::object Read(stego_disk::StegoStorage& self, size_t size){
 
-  void* buffer_c = (void*)malloc(self.GetSize()*sizeof(char));
-  size_t size = 0;
-  self.Read(buffer_c, 0, size);
+  if(size > self.GetSize())
+    throw std::runtime_error("Stego has not enough space");
 
-  Py_buffer* py_buf = nullptr;
-  if (PyBuffer_ToContiguous(buffer_c, py_buf, static_cast<Py_ssize_t>(size), 'C')) {
-    throw std::runtime_error("Unable to copy buffer");
-  }
-  PyObject *mv = PyMemoryView_FromBuffer(py_buf); //this is not good, not at all
-  return boost::python::object(boost::python::handle<>(mv));
-  free(buffer_c);
-  PyBuffer_Release(py_buf);
+  unsigned char* buff = (unsigned char*)malloc(size * sizeof(unsigned char));
+
+  self.Read(buff, 0, size);
+
+  boost::python::object py_obj = boost::python::object(boost::python::handle<PyObject>(PyMemoryView_FromMemory((char*)buff, size, PyBUF_WRITE)));
+
+  free(buff);
+
+  return py_obj;
 }
 
 BOOST_PYTHON_MODULE(stego_py) {
