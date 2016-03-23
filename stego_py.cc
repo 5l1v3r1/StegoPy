@@ -34,7 +34,9 @@ boost::python::object Read(stego_disk::StegoStorage& self, size_t size){
 
   self.Read(buff, 0, size);
 
-  return boost::python::object(boost::python::handle<PyObject>(PyMemoryView_FromMemory((char*)buff, size, PyBUF_READ)));;
+  boost::python::object py_obj = boost::python::object(boost::python::handle<PyObject>(PyByteArray_FromStringAndSize((char*)buff, size)));
+  free(buff);
+  return py_obj;
 }
 
 BOOST_PYTHON_MODULE(stego_py) {

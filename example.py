@@ -22,7 +22,7 @@ in_buffer = in_buffer.encode('ascii')
 
 stego_disk.write(in_buffer)
 
-out_buffer = stego_disk.read(stego_disk.get_size()).tobytes()
+out_buffer = stego_disk.read(stego_disk.get_size())
 
 stego_disk.save()
 
