@@ -11,12 +11,12 @@ void (stego_disk::StegoStorage::*Configure3)(const stego_disk::EncoderFactory::E
 
 void Write(stego_disk::StegoStorage& self, boost::python::object buffer) {
 
-  size_t size =  boost::python::len(buffer);
+  std::size_t size =  boost::python::len(buffer);
 
   if(size > self.GetSize())
     throw std::runtime_error("Stego has not enough space");
 
-  unsigned char* buff = (unsigned char*)malloc(size * sizeof(unsigned char));
+  unsigned char* buff = static_cast<unsigned char*>(malloc(size * sizeof(unsigned char)));
 
   for(size_t i = 0; i < size; ++i)
     buff[i] = boost::python::extract<unsigned char>(buffer[i] );
@@ -25,17 +25,20 @@ void Write(stego_disk::StegoStorage& self, boost::python::object buffer) {
   free(buff);
 }
 
-boost::python::object Read(stego_disk::StegoStorage& self, size_t size){
+boost::python::object Read(stego_disk::StegoStorage& self, std::size_t size){
 
   if(size > self.GetSize())
     throw std::runtime_error("Stego has not enough space");
 
-  unsigned char* buff = (unsigned char*)malloc(size * sizeof(unsigned char));
+  unsigned char* buff = static_cast<unsigned char*>(malloc(size * sizeof(unsigned char)));
 
   self.Read(buff, 0, size);
 
-  boost::python::object py_obj = boost::python::object(boost::python::handle<PyObject>(PyByteArray_FromStringAndSize((char*)buff, size)));
+  boost::python::object py_obj = boost::python::object(boost::python::handle<PyObject>(
+                                                         PyByteArray_FromStringAndSize(static_cast<unsigned char*>(buff), size)));
+
   free(buff);
+
   return py_obj;
 }
 
