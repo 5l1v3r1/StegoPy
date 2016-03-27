@@ -18,7 +18,7 @@ stego_disk.open(to_directory, 'heslo')
 stego_disk.configure(stego_py.encoder.hamming, stego_py.permutation.feistel_mix, stego_py.permutation.feistel_mix)
 stego_disk.load()
 
-in_buffer = bytearray(randomword(stego_disk.get_size()).encode('ascii'))
+in_buffer = randomword(stego_disk.get_size()).encode('ascii')
 
 stego_disk.write(in_buffer)
 

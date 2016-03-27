@@ -20,8 +20,10 @@ void Write(stego_disk::StegoStorage& self, boost::python::object buffer) {
 
   if (PyByteArray_Check(py_ba)) {
     self.Write(static_cast<void*>(PyByteArray_AsString(py_ba)), 0, size);
+  } else if(PyBytes_Check(py_ba)) {
+    self.Write(static_cast<void*>(PyBytes_AsString(py_ba)), 0, size);
   } else {
-    throw std::runtime_error("write() input object is not a bytearray!");
+    throw std::runtime_error("write() type of input object is not a bytearray or a bytes!");
   }
 }
 
